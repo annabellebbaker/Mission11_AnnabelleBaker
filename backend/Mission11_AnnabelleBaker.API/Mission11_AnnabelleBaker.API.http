@@ -1,0 +1,6 @@
+@Mission11_AnnabelleBaker.API_HostAddress = http://localhost:5147
+
+GET {{Mission11_AnnabelleBaker.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
