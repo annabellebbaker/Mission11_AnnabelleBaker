@@ -1,13 +1,23 @@
-import BookList from './BookList';
 import './App.css';
+import BookPage from './pages/BookPage';
+import CartPage from './pages/CartPage';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { CartProvider } from './context/CartContext';
 
 function App() {
-
   return (
     <>
-      <BookList />
+      <CartProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<BookPage />} />
+            <Route path="/projects" element={<BookPage />} />
+            <Route path="/cart" element={<CartPage />} />
+          </Routes>
+        </Router>
+      </CartProvider>
     </>
-  )
+  );
 }
 
 export default App;
