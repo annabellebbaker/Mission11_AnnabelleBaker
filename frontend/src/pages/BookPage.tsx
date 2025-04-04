@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import CategoryFilter from '../components/CategoryFilter';
-import ProjectList from '../components/ProjectList';
-import WelcomeBand from '../WelcomeBand';
+import BookList from '../components/BookList';
+import WelcomeBand from '../components/WelcomeBand';
 import CartSummary from '../components/CartSummary';
 
 function BookPage() {
@@ -19,7 +19,7 @@ function BookPage() {
           />
         </div>
         <div className="col-md-9">
-          <ProjectList selectedCategories={selectedCategories} />
+          <BookList selectedCategories={selectedCategories} />
         </div>
       </div>
     </div>

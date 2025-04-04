@@ -4,7 +4,10 @@ import { useCart } from '../context/CartContext'; // import the useCart hook
 const CartSummary = () => {
   const navigate = useNavigate(); // this is used to navigate between pages
   const { cart } = useCart(); // useCart hook to get the cart items
-  const totalAmount = cart.reduce((sum, item) => sum + item.donationAmount, 0);
+  const totalAmount = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  ); // reduce squishes everything together
 
   return (
     <div
@@ -18,12 +21,24 @@ const CartSummary = () => {
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        boxShadow: '0 2p 5px rgba(0, 0, 0, 0.2)',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)',
         fontSize: '16px',
+        marginBottom: '20px',
       }}
-      onClick={() => navigate('/cart')}
     >
-      🛒 <strong>{totalAmount.toFixed(2)}</strong>
+      <button
+        style={{
+          background: '#007bff',
+          color: '#fff',
+          padding: '8px 16px',
+          border: 'none',
+          borderRadius: '4px',
+          cursor: 'pointer',
+        }}
+        onClick={() => navigate('/cart')}
+      >
+        🛒 <strong>${totalAmount.toFixed(2)}</strong>
+      </button>
     </div>
   );
 };

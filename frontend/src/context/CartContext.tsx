@@ -4,9 +4,10 @@ import { cartItem } from '../types/cartItem'; // Importing CartItem type from ty
 interface CartContextType {
   cart: cartItem[]; // Array of cart items (many insiodqe the cart)
   addToCart: (item: cartItem) => void; // function to add item to cart, nothing will be returned
-  removeFromCart: (projectId: number) => void; // function to remove item from cart, nothing will be returned
+  removeFromCart: (bookID: number) => void; // function to remove item from cart, nothing will be returned
   clearCart: () => void;
   // establishing these functions in our page
+  getCartSubtotal: () => number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined); // create context with undefined type
@@ -17,11 +18,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   const addToCart = (item: cartItem) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((c) => c.projectId === item.projectId); // check if item is already in cart)
+      const existingItem = prevCart.find((c) => c.bookID === item.bookID); // check if item is already in cart)
       const updatedCart = prevCart.map((c) =>
-        c.projectId === item.projectId
-          ? { ...c, donationAmount: c.donationAmount + item.donationAmount }
-          : c
+        c.bookID === item.bookID ? { ...c, price: c.price + item.price } : c
       ); // if it is, update the donation amount)
 
       return existingItem ? updatedCart : [...prevCart, item]; // if it is, update the donation amount, otherwise add the new item to the cart
@@ -30,19 +29,27 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     // take and spread the previous cart and add the new item to it
   };
 
-  const removeFromCart = (projectId: number) => {
-    setCart((prevCart) => prevCart.filter((c) => c.projectId !== projectId));
+  const removeFromCart = (bookID: number) => {
+    setCart((prevCart) => prevCart.filter((c) => c.bookID !== bookID));
   };
-  // remove item from cart, filter out the item with the given projectId
-  //those what is remaining are those that AREN'T the projectId
+  // remove item from cart, filter out the item with the given bookID
+  //those what is remaining are those that AREN'T the bookID
 
   const clearCart = () => {
-    setCart([]); // clear the cart by setting it to an empty array
+    setCart(() => []); // clear the cart by setting it to an empty array
+  };
+
+  // Get the total price (subtotal) of all items in the cart
+  const getCartSubtotal = (): number => {
+    return cart.reduce(
+      (subtotal, item) => subtotal + item.price * item.quantity,
+      0
+    );
   };
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart }}
+      value={{ cart, addToCart, removeFromCart, clearCart, getCartSubtotal }}
     >
       {children}
     </CartContext.Provider>

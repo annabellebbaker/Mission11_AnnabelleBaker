@@ -15,7 +15,8 @@ function CategoryFilter({
       // try catch block
       try {
         const response = await fetch(
-          `https://localhost:5000/Water/GetProjectTypes`
+          'https://localhost:5000/Book/GetCategories',
+          { credentials: 'include' }
         ); // got requested response
         // check the link if data isn't showing up to make sure the data is pulling up on the json
         const data = await response.json();
@@ -42,7 +43,7 @@ function CategoryFilter({
   return (
     <>
       <div className="category-filter">
-        <h5>Project Types</h5>
+        <h5>Book types</h5>
         <div className="category-list">
           {categories.map((c) => (
             <div key={c} className="category-item">

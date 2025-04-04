@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Mission11_AnnabelleBaker.API.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BookstoreContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("BookConnection")));
 
-builder.Services.AddCors(); // allows us to get requests from specific origins
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontEnd", builder =>
+    {
+        builder.WithOrigins("http://localhost:3000")
+            .AllowCredentials()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+}); // allows us to get requests from specific origins
 
 var app = builder.Build();
 
@@ -24,7 +34,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x.WithOrigins("http://localhost:3000")); // where we are getting the request from
+app.UseCors("AllowFrontEnd"); //This applies your named CORS policy
+                              // where we are getting the request from
 
 app.UseHttpsRedirection();
 

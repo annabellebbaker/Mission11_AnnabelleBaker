@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Mission11_AnnabelleBaker.API.Models;
 
 namespace Mission11_AnnabelleBaker.API.Controllers
@@ -16,18 +17,34 @@ namespace Mission11_AnnabelleBaker.API.Controllers
         }
         [HttpGet("AllBooks")] // way of routing to see all books in database
 
-        public IActionResult GetBooks(int pageSize = 10, int pageNum = 1, bool sort = false)
+        public IActionResult GetBooks(
+            int pageSize = 10,
+            int pageNum = 1,
+            string sortBy = "title",
+            string sortOrder = "asc",
+            [FromQuery] List<string>? categories = null)
         {
-            IQueryable<Book> x = _bookContext.Books;
+            var query = _bookContext.Books.AsQueryable();
 
-            if (sort) // if sort is true, order by Title
+            // Filter by category if provided
+            if (categories != null && categories.Any())
             {
-                x = x.OrderBy(b => b.Title);
+                query = query.Where(b => categories.Contains(b.Category));
             }
 
-            var totalNumBooks = _bookContext.Books.Count(); // get a count
+            // Apply sorting
+            query = sortBy.ToLower() switch
+            {
+                "title" => sortOrder.ToLower() == "asc" ? query.OrderBy(b => b.Title) : query.OrderByDescending(b => b.Title),
+                "author" => sortOrder.ToLower() == "asc" ? query.OrderBy(b => b.Author) : query.OrderByDescending(b => b.Author),
+                "publisher" => sortOrder.ToLower() == "asc" ? query.OrderBy(b => b.Publisher) : query.OrderByDescending(b => b.Publisher),
+                "price" => sortOrder.ToLower() == "asc" ? query.OrderBy(b => b.Price) : query.OrderByDescending(b => b.Price),
+                _ => query.OrderBy(b => b.Title)
+            };
 
-            var paginatedBooks = x
+            var totalNumBooks = query.Count();
+
+            var paginatedBooks = query
             .Skip((pageNum - 1) * pageSize) // take 2-1=1, then multiply by 5 to get 10
             .Take(pageSize) // only want to take 5, it's probably best to edit this in VS
             .ToList();
@@ -36,11 +53,21 @@ namespace Mission11_AnnabelleBaker.API.Controllers
             var someObject = new
             {
                 Books = paginatedBooks,
-                totalNumBooks = totalNumBooks
+                TotalNumBooks = totalNumBooks
             };
 
             return Ok(someObject);
         }
+        [HttpGet("GetCategories")]
+        public IActionResult GetCategories()
+        {
+            var categories = _bookContext.Books
+                .Select(b => b.Category)
+                .Distinct()
+                .ToList();
 
+            return Ok(categories);
+
+        }
     }
 }

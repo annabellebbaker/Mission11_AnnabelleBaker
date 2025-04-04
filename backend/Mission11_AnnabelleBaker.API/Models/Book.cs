@@ -7,7 +7,7 @@ namespace Mission11_AnnabelleBaker.API.Models;
 public partial class Book
 {
     [Key]
-    public int BookId { get; set; }
+    public int BookID { get; set; }
     [Required]
     public string Title { get; set; }
     [Required]
