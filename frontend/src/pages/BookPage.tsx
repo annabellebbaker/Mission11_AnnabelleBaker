@@ -8,6 +8,7 @@ import sleepsmarter from '../assets/sleepsmarter.jpg';
 import screwtape from '../assets/screwtape.jpg';
 import deep from '../assets/deep.jpg';
 import 'bootstrap/dist/css/bootstrap.min.css';
+// made carousel functionality displaying best books right now
 
 function BookPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
