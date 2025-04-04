@@ -3,6 +3,7 @@ import BookPage from './pages/BookPage';
 import CartPage from './pages/CartPage';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CartProvider } from './context/CartContext';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 function App() {
   return (
