@@ -8,6 +8,7 @@ import sleepsmarter from '../assets/sleepsmarter.jpg';
 import screwtape from '../assets/screwtape.jpg';
 import deep from '../assets/deep.jpg';
 import 'bootstrap/dist/css/bootstrap.min.css';
+// THE OTHER THING I USED WITH BOOTSTRAP
 // made carousel functionality displaying best books right now
 
 function BookPage() {
