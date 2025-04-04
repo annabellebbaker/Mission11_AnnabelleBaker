@@ -6,6 +6,7 @@ interface CartContextType {
   addToCart: (item: cartItem) => void; // function to add item to cart, nothing will be returned
   removeFromCart: (bookID: number) => void; // function to remove item from cart, nothing will be returned
   clearCart: () => void;
+  updateQuantity: (bookID: number, quantity: number) => void; // function to update the quantity of an item
   // establishing these functions in our page
   getCartSubtotal: () => number;
 }
@@ -39,6 +40,15 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCart(() => []); // clear the cart by setting it to an empty array
   };
 
+  // function to update the quantity of an item in the cart
+  const updateQuantity = (bookID: number, quantity: number) => {
+    setCart((prevCart) => {
+      return prevCart.map((item) =>
+        item.bookID === bookID ? { ...item, quantity } : item
+      );
+    });
+  };
+
   // Get the total price (subtotal) of all items in the cart
   const getCartSubtotal = (): number => {
     return cart.reduce(
@@ -49,7 +59,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, clearCart, getCartSubtotal }}
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        updateQuantity,
+        getCartSubtotal,
+      }}
     >
       {children}
     </CartContext.Provider>

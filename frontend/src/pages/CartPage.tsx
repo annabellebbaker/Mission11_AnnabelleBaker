@@ -7,14 +7,12 @@ import { useEffect } from 'react';
 
 function CartPage() {
   const navigate = useNavigate();
-  const { cart, removeFromCart } = useCart();
-  const totalAmount = cart.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
+  const { cart, updateQuantity, removeFromCart } = useCart();
+  
+  const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   useEffect(() => {
-    console.log('Cart updated:', cart);
+    console.log("Cart updated:", cart);
   }, [cart]);
 
   return (
@@ -32,6 +30,7 @@ function CartPage() {
                   <th>Title</th>
                   <th>Price</th>
                   <th>Quantity</th>
+                  <th>Subtotal</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -40,7 +39,23 @@ function CartPage() {
                   <tr key={item.bookID}>
                     <td>{item.title}</td>
                     <td>${item.price.toFixed(2)}</td>
-                    <td>{item.quantity}</td>
+                    <td>
+                      <button
+                        className="btn btn-outline-secondary btn-sm me-1"
+                        onClick={() => updateQuantity(item.bookID, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                      >
+                        −
+                      </button>
+                      {item.quantity}
+                      <button
+                        className="btn btn-outline-secondary btn-sm ms-1"
+                        onClick={() => updateQuantity(item.bookID, item.quantity + 1)}
+                      >
+                        +
+                      </button>
+                    </td>
+                    <td>${(item.price * item.quantity).toFixed(2)}</td>
                     <td>
                       <button
                         className="btn btn-danger btn-sm"
@@ -55,14 +70,18 @@ function CartPage() {
             </table>
           )}
         </div>
-        <h3 className="mt-3">Total:</h3>
-        <button className="btn btn-primary me-2">Checkout</button>
-        <button
-          className="btn btn-secondary"
-          onClick={() => navigate('/books')}
-        >
-          Continue Browsing
-        </button>
+
+        {cart.length > 0 && (
+          <div className="d-flex justify-content-between align-items-center mt-4">
+            <h3>Total: ${totalAmount.toFixed(2)}</h3>
+            <div>
+              <button className="btn btn-primary me-2">Checkout</button>
+              <button className="btn btn-secondary" onClick={() => navigate("/books")}>
+                Continue Browsing
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

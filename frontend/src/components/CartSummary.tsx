@@ -4,10 +4,15 @@ import { useCart } from '../context/CartContext'; // import the useCart hook
 const CartSummary = () => {
   const navigate = useNavigate(); // this is used to navigate between pages
   const { cart } = useCart(); // useCart hook to get the cart items
+  
+  // this calculates the total amount
   const totalAmount = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   ); // reduce squishes everything together
+
+  // // this calculates total items in the cart
+  // const totalNumBooks = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div
