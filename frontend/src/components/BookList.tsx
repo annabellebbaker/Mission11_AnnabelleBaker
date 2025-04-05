@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { book } from '../types/book';
-import { useNavigate, useParams } from 'react-router-dom';
+// import { useNavigate} from 'react-router-dom'; // add in UseParams
 import { useCart } from '../context/CartContext';
 import { cartItem } from '../types/cartItem';
 
 function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [books, setBooks] = useState<book[]>([]);
-  const [pageSize, setPageSize] = useState<number>(10);
+  const [pageSize] = useState<number>(10); // setPageSize
   const [pageNum, setPageNum] = useState<number>(1);
-  const [totalNumBooks, setTotalNumBooks] = useState<number>(0);
+  const [totalNumBooks, setTotalNumBooks] = useState<number>(0); // totalNumBooks
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [sortBy, setSortBy] = useState<string>('title');
-  const [sortOrder, setSortOrder] = useState<string>('asc');
+  const [sortBy] = useState<string>('title'); // set sortBy
+  const [sortOrder] = useState<string>('asc'); // setSortOrder
   const [showToast, setShowToast] = useState<boolean>(false);
   const [subtotal, setSubtotal] = useState<number>(0);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const { addToCart, getCartSubtotal } = useCart();
 
   const handleAddToCart = (book: book) => {
@@ -73,6 +73,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   return (
     <div className="container mt-4">
       <h1 className="mb-4 text-center">All Books</h1>
+      <p className="text-center mb-4">Total Books Found: {totalNumBooks}</p>
       <div className="row justify-content-center d-flex">
         {books.map((book) => (
           <div className="col-auto mb-4" key={book.bookID}>

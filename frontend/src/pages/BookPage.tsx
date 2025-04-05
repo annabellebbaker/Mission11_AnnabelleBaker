@@ -39,12 +39,12 @@ function BookPage() {
     border: '1px solid #ddd',
   };
 
-  const slideCenterStyle = {
-    height: '300px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  };
+  // const slideCenterStyle = {
+  //   height: '300px',
+  //   display: 'flex',
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // };
 
   return (
     <div className="container mt-4">
