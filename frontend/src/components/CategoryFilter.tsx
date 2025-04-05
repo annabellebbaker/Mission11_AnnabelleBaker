@@ -15,7 +15,7 @@ function CategoryFilter({
       // try catch block
       try {
         const response = await fetch(
-          'https://localhost:5000/Book/GetCategories',
+          'https://bookstore-annabelle-backend-f3g3fpd7f7d8cybe.eastus-01.azurewebsites.net/Book/GetCategories',
           { credentials: 'include' }
         ); // got requested response
         // check the link if data isn't showing up to make sure the data is pulling up on the json
