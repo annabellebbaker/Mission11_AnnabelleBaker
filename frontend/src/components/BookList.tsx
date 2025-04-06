@@ -1,20 +1,23 @@
 import { useEffect, useState } from 'react';
 import { book } from '../types/book';
-// import { useNavigate} from 'react-router-dom'; // add in UseParams
 import { useCart } from '../context/CartContext';
 import { cartItem } from '../types/cartItem';
+import { fetchBooks } from '../api/BooksAPI';
+import Pagination from './Pagination'; // assuming you have this component
 
 function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [books, setBooks] = useState<book[]>([]);
-  const [pageSize] = useState<number>(10); // setPageSize
+  const [pageSize, setPageSize] = useState<number>(10);
   const [pageNum, setPageNum] = useState<number>(1);
-  const [totalNumBooks, setTotalNumBooks] = useState<number>(0); // totalNumBooks
+  const [totalNumBooks, setTotalNumBooks] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [sortBy] = useState<string>('title'); // set sortBy
-  const [sortOrder] = useState<string>('asc'); // setSortOrder
+  const [sortBy] = useState<string>('title');
+  const [sortOrder] = useState<string>('asc');
   const [showToast, setShowToast] = useState<boolean>(false);
   const [subtotal, setSubtotal] = useState<number>(0);
-  // const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const { addToCart, getCartSubtotal } = useCart();
 
   const handleAddToCart = (book: book) => {
@@ -26,22 +29,20 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
       quantity: 1,
     };
     addToCart(newItem);
-    setSubtotal(getCartSubtotal()); // Get updated subtotal after adding the item
-    setShowToast(true); // Show the toast
-    setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
+    setSubtotal(getCartSubtotal());
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   useEffect(() => {
-    // Update subtotal whenever cart changes
     setSubtotal(getCartSubtotal());
-  }, [getCartSubtotal]); // Depend on getCartSubtotal so it updates on cart change
+  }, [getCartSubtotal]);
 
   const handleToast = () => {
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000); // Hide toast after 3 seconds
+    setTimeout(() => setShowToast(false), 3000);
   };
 
-  //
   useEffect(() => {
     if (subtotal > 0) {
       handleToast();
@@ -49,26 +50,31 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   }, [subtotal]);
 
   useEffect(() => {
-    const fetchBooks = async () => {
-      const categoryParams = selectedCategories
-        .map((cat) => `categories=${encodeURIComponent(cat)}`)
-        .join('&'); // mapping it out
-
-      const response = await fetch(
-        `https://localhost:5000/Book/AllBooks?pageSize=${pageSize}&pageNum=${pageNum}&sortBy=${sortBy}&sortOrder=${sortOrder}${
-          categoryParams ? `&${categoryParams}` : ''
-        }`,
-        { credentials: 'include' }
-      );
-      // checking length of selectedCategories
-      const data = await response.json();
-      setBooks(data.books); // setting it equal to the data and we NEED the projects, converting to json makes C# lowercase (HAS TO MATCH)
-      setTotalNumBooks(data.totalNumBooks); // setting equal to totalNumBooks
-      setTotalPages(Math.ceil(data.totalItems / pageSize)); // calculating number of pages needed for the page size
+    const loadBooks = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchBooks(
+          pageSize,
+          pageNum,
+          selectedCategories,
+          sortBy,
+          sortOrder
+        );
+        setBooks(data.books);
+        setTotalNumBooks(data.totalNumBooks);
+        setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchBooks(); // call this method and tries to pull the data, empty array is sent if errored
-  }, [pageSize, pageNum, sortBy, sortOrder, selectedCategories]); // rerun useEffect when page changes are detected, both are run with use efficiency
+    loadBooks();
+  }, [pageSize, pageNum, sortBy, sortOrder, selectedCategories]);
+
+  if (loading) return <p>Loading books...</p>;
+  if (error) return <p className="text-red-500">Error: {error}</p>;
 
   return (
     <div className="container mt-4">
@@ -103,12 +109,11 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
                     <strong>Price:</strong> ${book.price.toFixed(2)}
                   </li>
                 </ul>
-
                 <button
                   className="btn btn-success"
                   onClick={() => {
                     handleAddToCart(book);
-                    setSubtotal(getCartSubtotal()); // Ensure subtotal is updated
+                    setSubtotal(getCartSubtotal());
                   }}
                 >
                   Add to cart
@@ -118,68 +123,17 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
           </div>
         ))}
       </div>
-
-      {/* pagination navigation */}
-      <div className="d-flex justify-content-center my-3">
-        <button
-          className="btn btn-primary me-2"
-          disabled={pageNum === 1}
-          onClick={() => setPageNum(pageNum - 1)}
-        >
-          Previous
-        </button>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            className={`btn btn-outline-primary mx-1 ${pageNum === index + 1 ? 'active' : ''}`}
-            onClick={() => setPageNum(index + 1)}
-            disabled={pageNum === index + 1}
-          >
-            {index + 1}
-          </button>
-        ))}
-        <button
-          className="btn btn-primary ms-2"
-          disabled={pageNum === totalPages}
-          onClick={() => setPageNum(pageNum + 1)}
-        >
-          Next
-        </button>
-      </div>
-
-      {/* Sort and results per page */}
-      <div className="row g-2 align-items-center">
-        {/* Add dropdowns for sort by and results per page here... */}
-      </div>
-
-      {/* toast section */}
-      {showToast && (
-        <div
-          className="position-fixed bottom-0 end-0 p-3"
-          style={{ zIndex: 1050 }}
-        >
-          <div
-            className="toast show"
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-          >
-            <div className="toast-header">
-              <strong className="me-auto">Cart Update</strong>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="toast"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="toast-body">
-              <p>Item added to cart!</p>
-              <p>Updated subtotal: ${subtotal.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* after the mapping function for overall pagination */}
+      <Pagination
+        currentPage={pageNum}
+        totalPages={totalPages}
+        pageSize={pageSize}
+        onPageChange={setPageNum}
+        onPageSizeChange={(newSize) => {
+          setPageSize(newSize);
+          setPageNum(1);
+        }}
+      />
     </div>
   );
 }
