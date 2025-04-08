@@ -69,5 +69,52 @@ namespace Mission11_AnnabelleBaker.API.Controllers
             return Ok(categories);
 
         }
+
+        public IActionResult AddBook([FromBody] book newBook)
+        {
+            _bookContext.Books.Add(newBook);
+            _bookContext.SaveChanges();
+            return Ok(newBook);
+        }
+
+        [HttpPut("UpdatedBook/{id}")]
+        public IActionResult UpdateBook(int id,[FromBody] book updatedBook)
+        {
+            var bookToUpdate = _bookContext.Books.Find(id);
+            if (bookToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            // update book - turning all the actual books in the database into updated information
+            bookToUpdate.Title = updatedBook.Title;
+            bookToUpdate.Author = updatedBook.Author;
+            bookToUpdate.Publisher = updatedBook.Publisher;
+            bookToUpdate.Category = updatedBook.Category;
+            bookToUpdate.ISBN = updatedBook.Category;
+            bookToUpdate.Classification = updatedBook.PageCount;
+            bookToUpdate.Price = updatedBook.Price;
+
+            _bookContext.Books.Update(bookToUpdate);
+            _bookContext.SaveChanges();
+
+            return Ok(bookToUpdate);
+        }
+
+        // deleting book from database
+        [HttpDelete("DeleteBook/{id}")]
+        public IActionResult DeleteBook(int id)
+        {
+            var bookToDelete = _bookContext.Books.Find(id);
+            if (bookToDelete == null)
+            {
+                return NotFound(new { message = "Book not found"});
+            }
+
+            _bookContext.Books.Remove(booksToDelete);
+            _bookContext.SaveChanges();
+
+            return NoContent(); 
+        }
     }
 }

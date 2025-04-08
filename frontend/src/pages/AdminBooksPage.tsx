@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { book } from '../types/book';
 import { fetchBooks } from '../api/BooksAPI';
 import Pagination from '../components/Pagination';
+import NewBookForm from '../components/NewBookForm';
+import EditBookForm from '../components/EditBookForm';
 
 // finished admin page managing books
 const AdminBooksPage = () => {
@@ -14,6 +16,8 @@ const AdminBooksPage = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [sortBy] = useState<string>('title');
   const [sortOrder] = useState<string>('asc');
+  const [showForm, setShowForm] = useState(false);
+  const [editingBook, setEditingBook] = useState<book | null>(null);
 
   // benefit of UseEffect is that it constantly changes and sees new changes on database
   useEffect(() => {
@@ -38,6 +42,40 @@ const AdminBooksPage = () => {
   return (
     <div>
       <h1>Admin - Books</h1>
+
+      {!showForm && (
+        <button
+          className="btn btn-success mb-3"
+          onClick={() => setShowForm(true)}
+        >
+          Add New Book
+        </button>
+      )}
+
+      {showForm && (
+        <NewBookForm
+          onSuccess={() => {
+            setShowForm(false);
+            fetchBooks(pageSize, pageNum, sortBy, sortOrder, []).then((data) =>
+              setBooks(data.books)
+            );
+          }}
+          onCancel={() => setShowForm(false)}
+        />
+      )}
+
+      {editingBook && (
+        <EditBookForm
+          book={editingBook}
+          onSuccess={() => {
+            setEditingBook(null);
+            fetchBooks(pageSize, pageNum, sortBy, sortOrder, []).then((data) =>
+              setBooks(data.books)
+            );
+          }}
+          onCancel={() => setEditingBook(null)}
+        />
+      )}
       <table>
         <thead>
           <tr>

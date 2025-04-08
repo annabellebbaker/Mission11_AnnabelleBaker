@@ -5,6 +5,9 @@ interface FetchBooksResponse {
   totalNumBooks: number;
 }
 
+const API_URL =
+  'https://bookstore-annabelle-backend-f3g3fpd7f7d8cybe.eastus-01.azurewebsites.net/Book';
+
 export const fetchBooks = async (
   pageSize: number,
   pageNum: number,
@@ -19,10 +22,9 @@ export const fetchBooks = async (
       .join('&'); // mapping it out
 
     const response = await fetch(
-      `https://localhost:5000/Book/AllBooks?pageSize=${pageSize}&pageNum=${pageNum}&sortBy=${sortBy}&sortOrder=${sortOrder}${
+      `${API_URL}/https://localhost:5000/Book/AllBooks?pageSize=${pageSize}&pageNum=${pageNum}&sortBy=${sortBy}&sortOrder=${sortOrder}${
         categoryParams ? `&${categoryParams}` : ''
-      }`,
-      { credentials: 'include' }
+      }`
     );
 
     if (!response.ok) {
@@ -37,5 +39,65 @@ export const fetchBooks = async (
   }
 };
 
-// const API_URL =
-//   'https://bookstore-annabelle-backend-f3g3fpd7f7d8cybe.eastus-01.azurewebsites.net/Book';
+// asyncronous - means it doesn't have to happen at the same time (function will do its thing while you're doing your stuff)
+export const addBook = async (newBook: book): Promise<book> => {
+  try {
+    const response = await fetch(`${API_URL}/AddBook`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newBook),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add book');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error adding book', error);
+    throw error;
+  }
+};
+
+export const updateBook = async (
+  bookID: number,
+  updatedBook: book
+): Promise<book> => {
+  try {
+    const response = await fetch(`${API_URL}/UpdateBook/${bookID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedBook),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update book');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error updating book', error);
+    throw error;
+  }
+};
+
+export const deleteBook = async (bookID: number): Promise<void> => {
+  try {
+    const response = await fetch(`${API_URL}/DeleteBook/${bookID}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete book');
+    }
+  } catch (error) {
+    console.error('Error deleting book', error);
+    throw error;
+  }
+};
