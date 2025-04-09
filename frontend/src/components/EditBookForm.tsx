@@ -3,13 +3,13 @@ import { book } from '../types/book';
 import { updateBook } from '../api/BooksAPI';
 
 interface EditBookFormProps {
-  book: Book;
+  book: book;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
 const EditBookForm = ({ book, onSuccess, onCancel }: EditBookFormProps) => {
-  const [formData, setFormData] = useState<Book>({ ...book });
+  const [formData, setFormData] = useState<book>({ ...book });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

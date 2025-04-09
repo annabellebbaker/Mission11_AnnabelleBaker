@@ -13,7 +13,6 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [sortBy] = useState<string>('title');
   const [sortOrder] = useState<string>('asc');
-  const [showToast, setShowToast] = useState<boolean>(false);
   const [subtotal, setSubtotal] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,24 +29,11 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
     };
     addToCart(newItem);
     setSubtotal(getCartSubtotal());
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
   };
 
   useEffect(() => {
     setSubtotal(getCartSubtotal());
   }, [getCartSubtotal]);
-
-  const handleToast = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
-  };
-
-  useEffect(() => {
-    if (subtotal > 0) {
-      handleToast();
-    }
-  }, [subtotal]);
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -56,9 +42,9 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
         const data = await fetchBooks(
           pageSize,
           pageNum,
-          selectedCategories,
           sortBy,
-          sortOrder
+          sortOrder,
+          selectedCategories
         );
         setBooks(data.books);
         setTotalNumBooks(data.totalNumBooks);
@@ -132,8 +118,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
         onPageSizeChange={(newSize) => {
           setPageSize(newSize);
           setPageNum(1);
-        }}
-      />
+        } } totalNumBooks={0}      />
     </div>
   );
 }

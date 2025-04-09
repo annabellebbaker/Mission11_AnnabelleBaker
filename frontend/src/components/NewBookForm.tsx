@@ -71,6 +71,20 @@ const NewBookForm = ({ onSuccess, onCancel }: NewBookFormProps) => {
       </div>
 
       <div className="mb-2">
+        <label htmlFor="publisher" className="form-label">
+          Publisher
+        </label>
+        <input
+          type="text"
+          className="form-control form-control-sm"
+          id="publisher"
+          name="publisher"
+          value={formData.publisher}
+          onChange={handleChange}
+        />
+      </div>
+
+      <div className="mb-2">
         <label htmlFor="isbn" className="form-label">
           ISBN
         </label>
@@ -94,7 +108,7 @@ const NewBookForm = ({ onSuccess, onCancel }: NewBookFormProps) => {
           className="form-control form-control-sm"
           id="classification"
           name="classification"
-          value={formData.isbn}
+          value={formData.classification}
           onChange={handleChange}
           required
         />

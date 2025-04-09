@@ -3,6 +3,7 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   pageSize: number;
+  totalNumBooks: number;
   onPageChange: (newPage: number) => void;
   onPageSizeChange: (newSize: number) => void;
 }
@@ -67,35 +68,6 @@ const Pagination = ({
           <option value="20">20</option>
         </select>
       </div>
-
-      {/* Toast section */}
-      {showToast && (
-        <div
-          className="position-fixed bottom-0 end-0 p-3"
-          style={{ zIndex: 1050 }}
-        >
-          <div
-            className="toast show"
-            role="alert"
-            aria-live="assertive"
-            aria-atomic="true"
-          >
-            <div className="toast-header">
-              <strong className="me-auto">Cart Update</strong>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="toast"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="toast-body">
-              <p>Item added to cart!</p>
-              <p>Updated subtotal: ${subtotal.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

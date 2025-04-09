@@ -5,15 +5,17 @@ interface FetchBooksResponse {
   totalNumBooks: number;
 }
 
+// const API_URL = 'https://localhost:5000/Book';
+
 const API_URL =
   'https://bookstore-annabelle-backend-f3g3fpd7f7d8cybe.eastus-01.azurewebsites.net/Book';
 
 export const fetchBooks = async (
   pageSize: number,
   pageNum: number,
-  selectedCategories: string[],
   sortBy: string,
-  sortOrder: string
+  sortOrder: string,
+  selectedCategories: string[]
 ): Promise<FetchBooksResponse> => {
   // tell it what to do for this function
   try {
@@ -22,7 +24,7 @@ export const fetchBooks = async (
       .join('&'); // mapping it out
 
     const response = await fetch(
-      `${API_URL}/https://localhost:5000/Book/AllBooks?pageSize=${pageSize}&pageNum=${pageNum}&sortBy=${sortBy}&sortOrder=${sortOrder}${
+      `${API_URL}/AllBooks?pageSize=${pageSize}&pageNum=${pageNum}&sortBy=${sortBy}&sortOrder=${sortOrder}${
         categoryParams ? `&${categoryParams}` : ''
       }`
     );

@@ -69,16 +69,16 @@ namespace Mission11_AnnabelleBaker.API.Controllers
             return Ok(categories);
 
         }
-
-        public IActionResult AddBook([FromBody] book newBook)
+        [HttpPost("AddBook")] // here's some data
+        public IActionResult AddBook([FromBody] Book newBook)
         {
             _bookContext.Books.Add(newBook);
             _bookContext.SaveChanges();
             return Ok(newBook);
         }
 
-        [HttpPut("UpdatedBook/{id}")]
-        public IActionResult UpdateBook(int id,[FromBody] book updatedBook)
+        [HttpPut("UpdateBook/{id}")] // we are going to change some data
+        public IActionResult UpdateBook(int id,[FromBody] Book updatedBook)
         {
             var bookToUpdate = _bookContext.Books.Find(id);
             if (bookToUpdate == null)
@@ -90,9 +90,10 @@ namespace Mission11_AnnabelleBaker.API.Controllers
             bookToUpdate.Title = updatedBook.Title;
             bookToUpdate.Author = updatedBook.Author;
             bookToUpdate.Publisher = updatedBook.Publisher;
+            bookToUpdate.ISBN = updatedBook.ISBN;
+            bookToUpdate.Classification = updatedBook.Classification;
             bookToUpdate.Category = updatedBook.Category;
-            bookToUpdate.ISBN = updatedBook.Category;
-            bookToUpdate.Classification = updatedBook.PageCount;
+            bookToUpdate.PageCount = updatedBook.PageCount;
             bookToUpdate.Price = updatedBook.Price;
 
             _bookContext.Books.Update(bookToUpdate);
@@ -111,7 +112,7 @@ namespace Mission11_AnnabelleBaker.API.Controllers
                 return NotFound(new { message = "Book not found"});
             }
 
-            _bookContext.Books.Remove(booksToDelete);
+            _bookContext.Books.Remove(bookToDelete);
             _bookContext.SaveChanges();
 
             return NoContent(); 

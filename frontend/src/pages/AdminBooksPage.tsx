@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { book } from '../types/book';
-import { fetchBooks } from '../api/BooksAPI';
+import { deleteBook, fetchBooks } from '../api/BooksAPI';
 import Pagination from '../components/Pagination';
 import NewBookForm from '../components/NewBookForm';
 import EditBookForm from '../components/EditBookForm';
@@ -12,7 +12,6 @@ const AdminBooksPage = () => {
   const [loading, setLoading] = useState(true);
   const [pageSize, setPageSize] = useState<number>(10);
   const [pageNum, setPageNum] = useState<number>(1);
-  const [totalNumBooks, setTotalNumBooks] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [sortBy] = useState<string>('title');
   const [sortOrder] = useState<string>('asc');
@@ -23,7 +22,8 @@ const AdminBooksPage = () => {
   useEffect(() => {
     const loadBooks = async () => {
       try {
-        const data = await fetchBooks(pageSize, pageNum, [], sortBy, sortOrder);
+        setLoading(true);
+        const data = await fetchBooks(pageSize, pageNum, sortBy, sortOrder, []);
         setBooks(data.books);
         setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
       } catch (err) {
@@ -34,10 +34,28 @@ const AdminBooksPage = () => {
     };
 
     loadBooks();
-  }, []);
+  }, [pageSize, pageNum]);
 
   if (loading) return <p>Loading books...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
+
+  const handleDelete = async (bookID: number) => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this book?'
+    );
+    if (!confirmDelete) {
+      return;
+    }
+    try {
+      await deleteBook(bookID);
+      fetchBooks(pageSize, pageNum, sortBy, sortOrder, []).then((data) => {
+        setBooks(data.books);
+        setTotalPages(Math.ceil(data.totalNumBooks / pageSize));
+      });
+    } catch (error) {
+      setError((error as Error).message);
+    }
+  };
 
   return (
     <div>
@@ -103,12 +121,8 @@ const AdminBooksPage = () => {
               <td>{b.pageCount}</td>
               <td>{b.price}</td>
               <td>
-                <button onClick={() => console.log(`Edit book ${b.bookID}`)}>
-                  Edit
-                </button>
-                <button onClick={() => console.log(`Delete book ${b.bookID}`)}>
-                  Delete
-                </button>
+                <button onClick={() => setEditingBook(b)}>Edit</button>
+                <button onClick={() => handleDelete(b.bookID)}>Delete</button>
               </td>
             </tr>
           ))}
@@ -124,6 +138,7 @@ const AdminBooksPage = () => {
           setPageSize(newSize);
           setPageNum(1);
         }}
+        totalNumBooks={0}
       />
     </div>
   );
