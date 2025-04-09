@@ -33,6 +33,7 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
 
   useEffect(() => {
     setSubtotal(getCartSubtotal());
+    console.log(subtotal);
   }, [getCartSubtotal]);
 
   useEffect(() => {
@@ -118,7 +119,9 @@ function BookList({ selectedCategories }: { selectedCategories: string[] }) {
         onPageSizeChange={(newSize) => {
           setPageSize(newSize);
           setPageNum(1);
-        } } totalNumBooks={0}      />
+        }}
+        totalNumBooks={0}
+      />
     </div>
   );
 }
